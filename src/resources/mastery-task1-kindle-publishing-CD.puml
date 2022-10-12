@@ -1,1 +1,67 @@
-PARTICIPANTS: use this file for creating the class diagram in mastery task 01
+@startuml
+class GetBookActivity {
+    -recommendationServiceClient : RecommendationsServiceClient
+    -catalogDao : CatalogDao
+    +execute(request : GetBookRequest) : GetBookResponse
+}
+class RemoveBookFromCatalogActivity{
+    -catalogDao : CatalogDao
+    +execute(removeBookFromCatalogRequest : RemoveBookFromCatalogRequest) : RemoveBookFromCatalogResponse
+}
+class RecommendationsServiceClient{
+    -recommendationsService : RecommendationsService
+    +getBookRecommendations(genre : BookGenre) : List<BookRecommendation>
+}
+class CatalogDao{
+    -dynamoDbMapper : DynamoDBMapper
+    +getBookFromCatalog(bookId : String) : CatalogItemVersion
+    +getLatestVersionOfBook(bookId : String) : CatalogItemVersion
+}
+
+class CatalogItemVersion{
+    -@DynamoDBHashKey bookId : String
+    -@DynamoDBRangeKey version : int
+    -inactive : boolean
+    -title : String
+    -author : String
+    -text : String
+    -genre : BookGenre
+}
+
+class BookNotFoundException{
+}
+
+GetBookActivity o-- CatalogDao
+GetBookActivity o-- RecommendationsServiceClient
+RemoveBookFromCatalogActivity o-- CatalogDao
+BookNotFoundException o-- CatalogDao
+CatalogItemVersion o-- CatalogDao
+
+newpage
+class GetPublishingStatusActivity{
+    +execute(publishingStatusRequest : GetPublishingStatusRequest) : GetPublishingStatusResponse
+}
+class SubmitBookForPublishingActivity{
+    -publishingStatusDao : PublishingStatusDao
+    +execute(request : SubmitBookForPublishingRequest) : SubmitBookForPublishingResponse
+}
+class PublishingStatusDao{
+    -ADDITIONAL_NOTES_PREFIX : String
+    -dynamoDbMapper : DynamoDBMapper
+    +setPublishingStatus(publishingRecordId : String, publishingRecordStatus : PublishingRecordStatus, bookId : String) : PublishingStatusItem
+    ++setPublishingStatus(publishingRecordId : String, publishingRecordStatus : PublishingRecordStatus, bookId : String, message : String) : PublishingStatusItem
+}
+class PublishingStatusItem{
+    -@DynamoDBHashKey publishingRecordId : String
+    -@DynamoDBRangeKey status : PublishingRecordStatus
+    -statusMessage : String
+    -bookId : String
+}
+class PublishingStatusNotFoundException{
+}
+
+GetPublishingStatusActivity o-- PublishingStatusDao
+SubmitBookForPublishingActivity o-- PublishingStatusDao
+PublishingStatusItem o-- PublishingStatusDao
+PublishingStatusNotFoundException o-- PublishingStatusDao
+@enduml
