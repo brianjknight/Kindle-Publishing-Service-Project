@@ -52,6 +52,15 @@ public class BookRecommendation {
         return Objects.hash(title, author, asin);
     }
 
+    @Override
+    public String toString() {
+        return "BookRecommendation{" +
+                "title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", asin='" + asin + '\'' +
+                '}';
+    }
+
     public BookRecommendation(Builder builder) {
         this.title = builder.title;
         this.author = builder.author;

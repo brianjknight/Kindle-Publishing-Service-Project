@@ -85,6 +85,17 @@ public class Book {
         return Objects.hash(bookId, title, author, text, genre, version);
     }
 
+    @Override
+    public String toString() {
+        return "Book{" +
+                "bookId='" + bookId + '\'' +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", genre='" + genre + '\'' +
+                ", version=" + version +
+                '}';
+    }
+
     public static Builder builder() {return new Builder();}
 
     public Book(Builder builder) {

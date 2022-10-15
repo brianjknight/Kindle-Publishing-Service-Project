@@ -4,8 +4,13 @@
 * Refer to Design Document
 * UPER - Understand, Plan, Execute, Refelct
 * Add Mocks to some tests.
+* Unit tests for your new logic in CatalogDao, we encourage you to use ArgumentCaptors
 
-# Endpoints
+## Possible Issues
+* **Should I use CatalogDao helper getLatestVersionOfBook(String bookId) or include a version number to remove?**
+
+
+## Endpoints
 ### GetBook
 * Composite primary key bookId & version
 * Books are not deleted or modified to preserve versions.

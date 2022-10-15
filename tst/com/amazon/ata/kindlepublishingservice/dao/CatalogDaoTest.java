@@ -126,4 +126,60 @@ public class CatalogDaoTest {
         assertEquals(bookId, queriedItem.getBookId(), "Expected query to look for provided bookId");
         assertEquals(1, requestCaptor.getValue().getLimit(), "Expected query to have a limit set");
     }
+
+    @Test
+    public void removeBookFromCatalog_bookDoesNotExist_throwsException() {
+        //GIVEN
+        String bookId = "book.not_a_book";
+        when(dynamoDbMapper.query(eq(CatalogItemVersion.class), any(DynamoDBQueryExpression.class))).thenThrow(BookNotFoundException.class);
+        when(list.isEmpty()).thenReturn(true);
+
+        //WHEN THEN
+        assertThrows(BookNotFoundException.class, () -> catalogDao.removeBookFromCatalog(bookId) ,"Expected BookNotFountException to be thrown.");
+    }
+
+    @Test
+    public void removeBookFromCatalog_bookIsInactive_throwsException() {
+        //GIVEN
+        CatalogItemVersion book = new CatalogItemVersion();
+        book.setBookId("inactiveBook");
+        book.setInactive(true);
+
+        when(dynamoDbMapper.query(eq(CatalogItemVersion.class), any(DynamoDBQueryExpression.class))).thenReturn(list);
+        when(list.isEmpty()).thenReturn(false);
+        when(list.get(0)).thenReturn(book);
+
+        //WHEN THEN
+        assertThrows(BookNotFoundException.class, () -> catalogDao.removeBookFromCatalog("inactiveBook") ,"Expected BookNotFountException to be thrown.");
+    }
+
+    @Test
+    public void removeBookFromCatalog_activeBookOneVersion_returnsVersionOne() {
+        //GIVEN
+        String bookId = "book.123";
+        CatalogItemVersion bookOne = new CatalogItemVersion();
+        bookOne.setInactive(false);
+        bookOne.setBookId(bookId);
+        bookOne.setVersion(1);
+        ArgumentCaptor<DynamoDBQueryExpression> requestCaptor = ArgumentCaptor.forClass(DynamoDBQueryExpression.class);
+
+        when(dynamoDbMapper.query(eq(CatalogItemVersion.class), any(DynamoDBQueryExpression.class))).thenReturn(list);
+        when(list.isEmpty()).thenReturn(false);
+        when(list.get(0)).thenReturn(bookOne);
+
+        //WHEN
+        CatalogItemVersion result = catalogDao.removeBookFromCatalog("book.123");
+
+        //THEN
+        assertEquals(bookId, result.getBookId(), "Expected bookIds to be equal.");
+        assertEquals(1, result.getVersion(), "Expected the book versions to be equal.");
+        assertTrue(result.isInactive(), "Expected the result book to be inactive after removing (inactive = true);");
+
+        verify(dynamoDbMapper).query(eq(CatalogItemVersion.class), requestCaptor.capture());
+        CatalogItemVersion queriedItem = (CatalogItemVersion) requestCaptor.getValue().getHashKeyValues();
+        assertEquals(bookId, queriedItem.getBookId(), "Expected the query item to contain the given bookId.");
+        assertEquals(1, requestCaptor.getValue().getLimit(), "Expected the query limit to be set to 1.");
+    }
+
+
 }
