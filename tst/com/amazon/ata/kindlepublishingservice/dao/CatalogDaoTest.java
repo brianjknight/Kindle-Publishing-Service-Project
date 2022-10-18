@@ -14,11 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -181,5 +177,41 @@ public class CatalogDaoTest {
         assertEquals(1, requestCaptor.getValue().getLimit(), "Expected the query limit to be set to 1.");
     }
 
+    @Test void validateBookExists_nonExistingBook_throwsException() {
+        // GIVEN
+        String invalidBookId = "notABookID";
+        when(dynamoDbMapper.query(eq(CatalogItemVersion.class), any(DynamoDBQueryExpression.class))).thenReturn(list);
+        when(list.isEmpty()).thenReturn(true);
 
+        // WHEN && THEN
+        assertThrows(BookNotFoundException.class, () -> catalogDao.getBookFromCatalog(invalidBookId),
+                "Expected BookNotFoundException to be thrown for an invalid bookId.");
+    }
+
+    @Test void validateBookExists_activeBook_doesNotThrowException() {
+        //GIVEN
+        String activeBookId = "book.123";
+        CatalogItemVersion catalogItemVersion = new CatalogItemVersion();
+        catalogItemVersion.setBookId(activeBookId);
+        catalogItemVersion.setInactive(false);
+        when(dynamoDbMapper.query(eq(CatalogItemVersion.class), any(DynamoDBQueryExpression.class))).thenReturn(list);
+        when(list.isEmpty()).thenReturn(false);
+        when(list.get(0)).thenReturn(catalogItemVersion);
+
+        //WHEN THEN
+        assertDoesNotThrow(() -> catalogDao.validateBookExists(activeBookId));
+    }
+
+    @Test void validateBookExists_inactiveBook_doesNotThrowException() {
+        String inactiveBookId = "book.123";
+        CatalogItemVersion catalogItemVersion = new CatalogItemVersion();
+        catalogItemVersion.setBookId(inactiveBookId);
+        catalogItemVersion.setInactive(true);
+        when(dynamoDbMapper.query(eq(CatalogItemVersion.class), any(DynamoDBQueryExpression.class))).thenReturn(list);
+        when(list.isEmpty()).thenReturn(false);
+        when(list.get(0)).thenReturn(catalogItemVersion);
+
+        //WHEN THEN
+        assertDoesNotThrow(() -> catalogDao.validateBookExists(inactiveBookId));
+    }
 }

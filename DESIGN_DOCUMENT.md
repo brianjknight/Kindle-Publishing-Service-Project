@@ -248,8 +248,8 @@ Below are the data models for the DynamoDB tables.
 
 ## Class Diagram
 
-<**MT01.MILESTONE 1**>
-
+![](src/resources/class-diagram-1.png)
+![](src/resources/class-diagram-2.png)
 [Link to class diagram PUML file](src/resources/mastery-task1-kindle-publishing-CD.puml)
 
 
