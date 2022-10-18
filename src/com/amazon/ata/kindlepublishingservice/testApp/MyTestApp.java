@@ -3,25 +3,39 @@ package com.amazon.ata.kindlepublishingservice.testApp;
 import com.amazon.ata.aws.dynamodb.DynamoDbClientProvider;
 import com.amazon.ata.kindlepublishingservice.activity.GetBookActivity;
 import com.amazon.ata.kindlepublishingservice.activity.RemoveBookFromCatalogActivity;
+import com.amazon.ata.kindlepublishingservice.activity.SubmitBookForPublishingActivity;
 import com.amazon.ata.kindlepublishingservice.clients.RecommendationsServiceClient;
+import com.amazon.ata.kindlepublishingservice.converters.PublishingStatusRecordCoralConverter;
 import com.amazon.ata.kindlepublishingservice.dao.CatalogDao;
+import com.amazon.ata.kindlepublishingservice.dao.PublishingStatusDao;
 import com.amazon.ata.kindlepublishingservice.dynamodb.models.CatalogItemVersion;
+import com.amazon.ata.kindlepublishingservice.dynamodb.models.PublishingStatusItem;
+import com.amazon.ata.kindlepublishingservice.enums.PublishingRecordStatus;
 import com.amazon.ata.kindlepublishingservice.models.BookRecommendation;
+import com.amazon.ata.kindlepublishingservice.models.PublishingStatusRecord;
 import com.amazon.ata.kindlepublishingservice.models.requests.GetBookRequest;
 import com.amazon.ata.kindlepublishingservice.models.requests.RemoveBookFromCatalogRequest;
+import com.amazon.ata.kindlepublishingservice.models.requests.SubmitBookForPublishingRequest;
 import com.amazon.ata.kindlepublishingservice.models.response.GetBookResponse;
 import com.amazon.ata.kindlepublishingservice.models.response.RemoveBookFromCatalogResponse;
+import com.amazon.ata.kindlepublishingservice.models.response.SubmitBookForPublishingResponse;
+import com.amazon.ata.kindlepublishingservice.publishing.BookPublishRequest;
+import com.amazon.ata.kindlepublishingservice.publishing.BookPublishRequestManager;
 import com.amazon.ata.recommendationsservice.RecommendationsService;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class MyTestApp {
     public static void main(String[] args) {
         DynamoDBMapper mapper = new DynamoDBMapper(DynamoDbClientProvider.getDynamoDBClient());
         CatalogDao catalogDao = new CatalogDao(mapper);
+        PublishingStatusDao publishingStatusDao = new PublishingStatusDao(mapper);
         RecommendationsService recommendationsService = new RecommendationsService();
         RecommendationsServiceClient recommendationsServiceClient = new RecommendationsServiceClient(recommendationsService);
 
@@ -60,21 +74,122 @@ public class MyTestApp {
         //---------------------------------------------------------------------------------------------
         // Test to view order of result from the DDB query scan.
 
-        CatalogItemVersion book = new CatalogItemVersion();
-        book.setBookId("book.ac510a76-008c-4478-b9f3-c277d74fa305");
+//        CatalogItemVersion book = new CatalogItemVersion();
+//        book.setBookId("book.ac510a76-008c-4478-b9f3-c277d74fa305");
+//
+//        DynamoDBQueryExpression<CatalogItemVersion> queryExpression = new DynamoDBQueryExpression<CatalogItemVersion>()
+//                .withHashKeyValues(book)
+//                .withScanIndexForward(false);
+//
+//
+//        List<CatalogItemVersion> results = mapper.query(CatalogItemVersion.class, queryExpression);
+//        System.out.println("-".repeat(100));
+//        System.out.println("Test to view order of result from the DDB query scan operation. For multiple versions the most recent inactive version is first in the list.");
+//        for (CatalogItemVersion c : results) {
+//            System.out.println(c);
+//        }
+//        System.out.println("-".repeat(100));
 
-        DynamoDBQueryExpression<CatalogItemVersion> queryExpression = new DynamoDBQueryExpression<CatalogItemVersion>()
-                .withHashKeyValues(book)
-                .withScanIndexForward(false);
+        //---------------------------------------------------------------------------------------------
+        // Test SubmitBookForPublishingActivity
+//        Queue<BookPublishRequest> requestQueue = new LinkedList<>();
+//        BookPublishRequestManager bookPublishRequestManager = new BookPublishRequestManager(requestQueue);
+//        SubmitBookForPublishingActivity submitBookForPublishingActivity = new SubmitBookForPublishingActivity(publishingStatusDao, catalogDao, bookPublishRequestManager);
+//
+//        // submit a publishing request for a  new book with no bookId
+//        SubmitBookForPublishingRequest submitRequestNewBook = SubmitBookForPublishingRequest.builder()
+//                .withAuthor("Author 1")
+//                .withGenre("FANTASY")
+//                .withText("Epilogue: ........")
+//                .withTitle("Stories of an AI")
+//                .build();
+//
+//        SubmitBookForPublishingResponse resultNewBook = submitBookForPublishingActivity.execute(submitRequestNewBook);
+//
+//        // submit a publishing request for an existing ACTIVE book
+//        SubmitBookForPublishingRequest submitRequestActiveBook = SubmitBookForPublishingRequest.builder()
+//                .withAuthor("Author 1")
+//                .withGenre("FANTASY")
+//                .withText("Epilogue: ........")
+//                .withTitle("Stories of an AI")
+//                .build();
+//
+//        SubmitBookForPublishingResponse resultActiveBook = submitBookForPublishingActivity.execute(submitRequestActiveBook);
+//
+//        // submit a publishing request for an existing INACTIVE book
+//        SubmitBookForPublishingRequest submitRequestInactiveBook = SubmitBookForPublishingRequest.builder()
+//                .withAuthor("Brian Knight")
+//                .withGenre("FANTASY")
+//                .withText("Once upon a time in a land far, far away...")
+//                .withTitle("Confessions of a Computer Programmer")
+//                .build();
+//
+//        SubmitBookForPublishingResponse resultInactiveBook = submitBookForPublishingActivity.execute(submitRequestInactiveBook);
+//
+//        System.out.println("resultNewBook: \n\t" + resultNewBook);
+//        for (BookPublishRequest request : requestQueue) {
+//            System.out.println(request);
+//        }
+//        System.out.println("-".repeat(100));
+//
+//        System.out.println("resultActiveBook: \n\t" + resultActiveBook);
+//        for (BookPublishRequest request : requestQueue) {
+//            System.out.println(request);
+//        }
+//        System.out.println("-".repeat(100));
+//
+//        System.out.println("resultInactiveBook: \n\t" + resultInactiveBook);
+//        for (BookPublishRequest request : requestQueue) {
+//            System.out.println(request);
+//        }
+//        System.out.println("-".repeat(100));
+        //---------------------------------------------------------------------------------------------
 
 
-        List<CatalogItemVersion> results = mapper.query(CatalogItemVersion.class, queryExpression);
-        System.out.println("-".repeat(100));
-        System.out.println("Test to view order of result from the DDB query scan operation. For multiple versions the most recent inactive version is first in the list.");
-        for (CatalogItemVersion c : results) {
-            System.out.println(c);
+        //---------------------------------------------------------------------------------------------
+        // Test PublishingStatusRecordCoralConverter
+        PublishingStatusItem item1_1 = new PublishingStatusItem();
+        item1_1.setPublishingRecordId("publish.item1_1");
+        item1_1.setStatus(PublishingRecordStatus.QUEUED);
+        item1_1.setBookId("book1");
+        item1_1.setStatusMessage("publish submitted");
+
+        PublishingStatusItem item1_2 = new PublishingStatusItem();
+        item1_2.setPublishingRecordId("publish.item1_2");
+        item1_2.setStatus(PublishingRecordStatus.IN_PROGRESS);
+        item1_2.setBookId("book1");
+        item1_2.setStatusMessage("publishing is in progress");
+
+        PublishingStatusItem item1_3 = new PublishingStatusItem();
+        item1_3.setPublishingRecordId("publish.item1_3");
+        item1_3.setStatus(PublishingRecordStatus.SUCCESSFUL);
+        item1_3.setBookId("book1");
+        item1_3.setStatusMessage("publish successful");
+
+        List<PublishingStatusItem> publishingStatusItemList = new ArrayList<>();
+        publishingStatusItemList.add(item1_1);
+        publishingStatusItemList.add(item1_2);
+        publishingStatusItemList.add(item1_3);
+
+        List<PublishingStatusRecord> publishingRecordStatusList = PublishingStatusRecordCoralConverter.toCoral(publishingStatusItemList);
+
+        System.out.println("Print out publishingStatusItemList: ");
+        for (PublishingStatusItem item : publishingStatusItemList) {
+            System.out.println(item);
         }
         System.out.println("-".repeat(100));
+        System.out.println("Print out publishingRecordStatusList: ");
+        for (PublishingStatusRecord record : publishingRecordStatusList) {
+            System.out.println(record);
+        }
 
+        //---------------------------------------------------------------------------------------------
+
+
+        //---------------------------------------------------------------------------------------------
+        //Test PublishingStatusDao getPublishingStatuses
+
+
+        //---------------------------------------------------------------------------------------------
     }
 }
