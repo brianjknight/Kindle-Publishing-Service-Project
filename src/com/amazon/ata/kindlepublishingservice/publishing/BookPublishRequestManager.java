@@ -3,13 +3,15 @@ package com.amazon.ata.kindlepublishingservice.publishing;
 import org.checkerframework.checker.signature.qual.InternalForm;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
 
-public class BookPublishRequestManager {
+public final class BookPublishRequestManager {
     private Queue<BookPublishRequest> requestQueue = new LinkedList<>();
 
+//    @Singleton
     @Inject
     public BookPublishRequestManager() {
     }
@@ -19,7 +21,7 @@ public class BookPublishRequestManager {
     }
 
     public BookPublishRequestManager(Queue<BookPublishRequest> requestQueue) {
-        this.requestQueue = requestQueue;
+        this.requestQueue = new LinkedList<>(requestQueue);
     }
 
     public void addBookPublishingRequest(BookPublishRequest bookPublishRequest) {

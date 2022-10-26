@@ -33,6 +33,13 @@ public class GetPublishingStatusResponse {
         return Objects.hash(publishingStatusHistory);
     }
 
+    @Override
+    public String toString() {
+        return "GetPublishingStatusResponse{" +
+                "publishingStatusHistory=" + publishingStatusHistory +
+                '}';
+    }
+
     public GetPublishingStatusResponse(Builder builder) {
         this.publishingStatusHistory = builder.publishingStatusHistory;
     }

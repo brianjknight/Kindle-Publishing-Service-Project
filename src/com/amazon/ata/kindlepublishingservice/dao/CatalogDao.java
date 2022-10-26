@@ -2,6 +2,7 @@ package com.amazon.ata.kindlepublishingservice.dao;
 
 import com.amazon.ata.kindlepublishingservice.dynamodb.models.CatalogItemVersion;
 import com.amazon.ata.kindlepublishingservice.exceptions.BookNotFoundException;
+import com.amazon.ata.kindlepublishingservice.models.Book;
 import com.amazon.ata.kindlepublishingservice.publishing.KindleFormattedBook;
 import com.amazon.ata.kindlepublishingservice.utils.KindlePublishingUtils;
 
@@ -71,6 +72,43 @@ public class CatalogDao {
         if (book == null) {
             throw new BookNotFoundException(String.format("No book found for id: %s", bookId));
         }
+    }
+
+    public CatalogItemVersion createOrUpdateBook(KindleFormattedBook kindleFormattedBook) {
+
+        //first determine if we are adding a new book or updating an existing book
+        CatalogItemVersion latestVersionOfBook = getLatestVersionOfBook(kindleFormattedBook.getBookId());
+
+        CatalogItemVersion newVersion = new CatalogItemVersion();
+
+        if (latestVersionOfBook != null) {
+            int latestVersion = latestVersionOfBook.getVersion();
+            latestVersionOfBook.setInactive(true);
+            dynamoDbMapper.save(latestVersionOfBook);
+
+            newVersion.setBookId(kindleFormattedBook.getBookId());
+            newVersion.setVersion(latestVersion + 1);
+            newVersion.setInactive(false);
+            newVersion.setTitle(kindleFormattedBook.getTitle());
+            newVersion.setAuthor(kindleFormattedBook.getAuthor());
+            newVersion.setText(kindleFormattedBook.getText());
+            newVersion.setGenre(kindleFormattedBook.getGenre());
+            dynamoDbMapper.save(newVersion);
+
+            return newVersion;
+        }
+        else {
+            String bookId = KindlePublishingUtils.generateBookId();
+            newVersion.setBookId(bookId);
+            newVersion.setVersion(1);
+            newVersion.setInactive(false);
+            newVersion.setTitle(kindleFormattedBook.getTitle());
+            newVersion.setAuthor(kindleFormattedBook.getAuthor());
+            newVersion.setText(kindleFormattedBook.getText());
+            newVersion.setGenre(kindleFormattedBook.getGenre());
+        }
+
+        return newVersion;
     }
 
     // Returns null if no version exists for the provided bookId

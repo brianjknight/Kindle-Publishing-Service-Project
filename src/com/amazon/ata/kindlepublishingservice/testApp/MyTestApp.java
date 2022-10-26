@@ -2,6 +2,7 @@ package com.amazon.ata.kindlepublishingservice.testApp;
 
 import com.amazon.ata.aws.dynamodb.DynamoDbClientProvider;
 import com.amazon.ata.kindlepublishingservice.activity.GetBookActivity;
+import com.amazon.ata.kindlepublishingservice.activity.GetPublishingStatusActivity;
 import com.amazon.ata.kindlepublishingservice.activity.RemoveBookFromCatalogActivity;
 import com.amazon.ata.kindlepublishingservice.activity.SubmitBookForPublishingActivity;
 import com.amazon.ata.kindlepublishingservice.clients.RecommendationsServiceClient;
@@ -14,9 +15,11 @@ import com.amazon.ata.kindlepublishingservice.enums.PublishingRecordStatus;
 import com.amazon.ata.kindlepublishingservice.models.BookRecommendation;
 import com.amazon.ata.kindlepublishingservice.models.PublishingStatusRecord;
 import com.amazon.ata.kindlepublishingservice.models.requests.GetBookRequest;
+import com.amazon.ata.kindlepublishingservice.models.requests.GetPublishingStatusRequest;
 import com.amazon.ata.kindlepublishingservice.models.requests.RemoveBookFromCatalogRequest;
 import com.amazon.ata.kindlepublishingservice.models.requests.SubmitBookForPublishingRequest;
 import com.amazon.ata.kindlepublishingservice.models.response.GetBookResponse;
+import com.amazon.ata.kindlepublishingservice.models.response.GetPublishingStatusResponse;
 import com.amazon.ata.kindlepublishingservice.models.response.RemoveBookFromCatalogResponse;
 import com.amazon.ata.kindlepublishingservice.models.response.SubmitBookForPublishingResponse;
 import com.amazon.ata.kindlepublishingservice.publishing.BookPublishRequest;
@@ -38,12 +41,13 @@ public class MyTestApp {
         PublishingStatusDao publishingStatusDao = new PublishingStatusDao(mapper);
         RecommendationsService recommendationsService = new RecommendationsService();
         RecommendationsServiceClient recommendationsServiceClient = new RecommendationsServiceClient(recommendationsService);
+        BookPublishRequestManager bookPublishRequestManager = new BookPublishRequestManager();
 
-        // *****************************************************************************
+        //---------------------------------------------------------------------------------------------
         // Test to get a book from the database.
 
 //        GetBookRequest getBookRequest = new GetBookRequest();
-//        getBookRequest.setBookId("book.69c16130-60b5-485a-8326-7f79d3feb36d");
+//        getBookRequest.setBookId("book.b3750190-2a30-4ca8-ae1b-73d0d202dc41");
 //
 //        GetBookActivity getBookActivity = new GetBookActivity(catalogDao, recommendationsServiceClient);
 //        GetBookResponse getBookResponse = getBookActivity.execute(getBookRequest);
@@ -55,8 +59,8 @@ public class MyTestApp {
 //            System.out.println("\t" + br);
 //        }
 //        System.out.println("-".repeat(100));
-        // *****************************************************************************
-        // Test to get a book from the database.
+        //---------------------------------------------------------------------------------------------
+
 
         //---------------------------------------------------------------------------------------------
         // Test to remove a book from the database.
@@ -70,6 +74,8 @@ public class MyTestApp {
 //        System.out.println("\t" + removeBookFromCatalogResponse);
 //
 //        System.out.println("-".repeat(100));
+        //---------------------------------------------------------------------------------------------
+
 
         //---------------------------------------------------------------------------------------------
         // Test to view order of result from the DDB query scan.
@@ -89,6 +95,8 @@ public class MyTestApp {
 //            System.out.println(c);
 //        }
 //        System.out.println("-".repeat(100));
+        //---------------------------------------------------------------------------------------------
+
 
         //---------------------------------------------------------------------------------------------
         // Test SubmitBookForPublishingActivity
@@ -148,40 +156,40 @@ public class MyTestApp {
 
         //---------------------------------------------------------------------------------------------
         // Test PublishingStatusRecordCoralConverter
-        PublishingStatusItem item1_1 = new PublishingStatusItem();
-        item1_1.setPublishingRecordId("publish.item1_1");
-        item1_1.setStatus(PublishingRecordStatus.QUEUED);
-        item1_1.setBookId("book1");
-        item1_1.setStatusMessage("publish submitted");
-
-        PublishingStatusItem item1_2 = new PublishingStatusItem();
-        item1_2.setPublishingRecordId("publish.item1_2");
-        item1_2.setStatus(PublishingRecordStatus.IN_PROGRESS);
-        item1_2.setBookId("book1");
-        item1_2.setStatusMessage("publishing is in progress");
-
-        PublishingStatusItem item1_3 = new PublishingStatusItem();
-        item1_3.setPublishingRecordId("publish.item1_3");
-        item1_3.setStatus(PublishingRecordStatus.SUCCESSFUL);
-        item1_3.setBookId("book1");
-        item1_3.setStatusMessage("publish successful");
-
-        List<PublishingStatusItem> publishingStatusItemList = new ArrayList<>();
-        publishingStatusItemList.add(item1_1);
-        publishingStatusItemList.add(item1_2);
-        publishingStatusItemList.add(item1_3);
-
-        List<PublishingStatusRecord> publishingRecordStatusList = PublishingStatusRecordCoralConverter.toCoral(publishingStatusItemList);
-
-        System.out.println("Print out publishingStatusItemList: ");
-        for (PublishingStatusItem item : publishingStatusItemList) {
-            System.out.println(item);
-        }
-        System.out.println("-".repeat(100));
-        System.out.println("Print out publishingRecordStatusList: ");
-        for (PublishingStatusRecord record : publishingRecordStatusList) {
-            System.out.println(record);
-        }
+//        PublishingStatusItem item1_1 = new PublishingStatusItem();
+//        item1_1.setPublishingRecordId("publish.item1_1");
+//        item1_1.setStatus(PublishingRecordStatus.QUEUED);
+//        item1_1.setBookId("book1");
+//        item1_1.setStatusMessage("publish submitted");
+//
+//        PublishingStatusItem item1_2 = new PublishingStatusItem();
+//        item1_2.setPublishingRecordId("publish.item1_2");
+//        item1_2.setStatus(PublishingRecordStatus.IN_PROGRESS);
+//        item1_2.setBookId("book1");
+//        item1_2.setStatusMessage("publishing is in progress");
+//
+//        PublishingStatusItem item1_3 = new PublishingStatusItem();
+//        item1_3.setPublishingRecordId("publish.item1_3");
+//        item1_3.setStatus(PublishingRecordStatus.SUCCESSFUL);
+//        item1_3.setBookId("book1");
+//        item1_3.setStatusMessage("publish successful");
+//
+//        List<PublishingStatusItem> publishingStatusItemList = new ArrayList<>();
+//        publishingStatusItemList.add(item1_1);
+//        publishingStatusItemList.add(item1_2);
+//        publishingStatusItemList.add(item1_3);
+//
+//        List<PublishingStatusRecord> publishingRecordStatusList = PublishingStatusRecordCoralConverter.toCoral(publishingStatusItemList);
+//
+//        System.out.println("Print out publishingStatusItemList: ");
+//        for (PublishingStatusItem item : publishingStatusItemList) {
+//            System.out.println(item);
+//        }
+//        System.out.println("-".repeat(100));
+//        System.out.println("Print out publishingRecordStatusList: ");
+//        for (PublishingStatusRecord record : publishingRecordStatusList) {
+//            System.out.println(record);
+//        }
 
         //---------------------------------------------------------------------------------------------
 
@@ -191,5 +199,48 @@ public class MyTestApp {
 
 
         //---------------------------------------------------------------------------------------------
+
+        //---------------------------------------------------------------------------------------------
+        //Test MT4 implementing Runnable Interface
+        // To test, submit a book publish request by calling SubmitBookForPublishing.
+        // You should then get back a publishingRecordId, which you’ll use to check the status by calling GetPublishingStatus.
+
+//        SubmitBookForPublishingActivity submitBookForPublishingActivity = new SubmitBookForPublishingActivity(
+//                                                                                    publishingStatusDao,
+//                                                                                    catalogDao,
+//                                                                                    bookPublishRequestManager);
+//
+//        SubmitBookForPublishingRequest submitRequestNewVersion = SubmitBookForPublishingRequest.builder()
+//                .withBookId("book.02468")
+//                .withTitle("Title of My Book (2nd Edition)")
+//                .withAuthor("Brian Knight")
+//                .withText("This is a work in progress....more text for version 2.....")
+//                .withGenre("FANTASY")
+//                .build();
+//
+//        SubmitBookForPublishingResponse response = submitBookForPublishingActivity.execute(submitRequestNewVersion);
+//        System.out.println("SubmitBooForPublishingResponse >> response.getPublishRecordId() = " + response.getPublishingRecordId());
+            //Successfully creates item in DDB table with status QUEUED.
+
+        //After submit activity call to PublishingStatusDao getPublishingStatuses
+//        List<PublishingStatusItem> publishingStatusItemList = publishingStatusDao.getPublishingStatuses("publishingstatus.fedb19c1-5c28-461d-b1c7-b0c7d6538ca4");
+//        for (PublishingStatusItem item : publishingStatusItemList) {
+//            System.out.println(item);
+//        }
+            //That works after submitting publish request
+
+//        publishingStatusDao.setPublishingStatus("publishingstatus.fedb19c1-5c28-461d-b1c7-b0c7d6538ca4",
+//                PublishingRecordStatus.IN_PROGRESS, "book.02468");
+            //successfully adds a new publishingRecordItem; new ID with updated status.
+
+        GetPublishingStatusActivity getPublishingStatusActivity = new GetPublishingStatusActivity(publishingStatusDao);
+        GetPublishingStatusRequest request = GetPublishingStatusRequest.builder()
+                .withPublishingRecordId("publishingstatus.fedb19c1-5c28-461d-b1c7-b0c7d6538ca4")
+                .build();
+        GetPublishingStatusResponse response = getPublishingStatusActivity.execute(request);
+        System.out.println(response);
+
+        //---------------------------------------------------------------------------------------------
+
     }
 }
