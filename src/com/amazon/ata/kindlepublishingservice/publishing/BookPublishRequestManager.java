@@ -7,21 +7,23 @@ import javax.inject.Singleton;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
+@Singleton
 public final class BookPublishRequestManager {
-    private Queue<BookPublishRequest> requestQueue = new LinkedList<>();
+    private Queue<BookPublishRequest> requestQueue = new ConcurrentLinkedQueue<>();
 
-//    @Singleton
     @Inject
     public BookPublishRequestManager() {
     }
 
     public Queue<BookPublishRequest> getRequestQueue() {
-        return requestQueue;
+        return new LinkedList<>(requestQueue);
     }
 
     public BookPublishRequestManager(Queue<BookPublishRequest> requestQueue) {
-        this.requestQueue = new LinkedList<>(requestQueue);
+        this.requestQueue = new ConcurrentLinkedQueue<>(requestQueue);
     }
 
     public void addBookPublishingRequest(BookPublishRequest bookPublishRequest) {

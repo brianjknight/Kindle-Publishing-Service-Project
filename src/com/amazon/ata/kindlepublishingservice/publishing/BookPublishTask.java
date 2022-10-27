@@ -4,10 +4,13 @@ import com.amazon.ata.kindlepublishingservice.dao.CatalogDao;
 import com.amazon.ata.kindlepublishingservice.dao.PublishingStatusDao;
 import com.amazon.ata.kindlepublishingservice.dynamodb.models.CatalogItemVersion;
 import com.amazon.ata.kindlepublishingservice.enums.PublishingRecordStatus;
+import com.amazon.ata.kindlepublishingservice.exceptions.BookNotFoundException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-public class BookPublishTask implements Runnable{
+//@Singleton
+public final class BookPublishTask implements Runnable{
 
     BookPublishRequestManager bookPublishRequestManager;
     PublishingStatusDao publishingStatusDao;
@@ -45,13 +48,12 @@ public class BookPublishTask implements Runnable{
 
         KindleFormattedBook kindleBook = KindleFormatConverter.format(request);
 
-        //TODO left off here
         try {
             CatalogItemVersion newBookVersion = catalogDao.createOrUpdateBook(kindleBook);
 
             publishingStatusDao.setPublishingStatus(request.getPublishingRecordId(), PublishingRecordStatus.SUCCESSFUL, newBookVersion.getBookId());
         }
-        catch (Exception e) {
+        catch (BookNotFoundException e) {
             publishingStatusDao.setPublishingStatus(request.getPublishingRecordId(), PublishingRecordStatus.FAILED, request.getBookId(), e.getMessage());
         }
 

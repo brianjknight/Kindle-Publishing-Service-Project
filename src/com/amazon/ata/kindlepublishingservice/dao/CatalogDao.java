@@ -95,7 +95,7 @@ public class CatalogDao {
             newVersion.setGenre(kindleFormattedBook.getGenre());
             dynamoDbMapper.save(newVersion);
 
-            return newVersion;
+//            return newVersion;
         }
         else {
             String bookId = KindlePublishingUtils.generateBookId();
@@ -106,6 +106,7 @@ public class CatalogDao {
             newVersion.setAuthor(kindleFormattedBook.getAuthor());
             newVersion.setText(kindleFormattedBook.getText());
             newVersion.setGenre(kindleFormattedBook.getGenre());
+            dynamoDbMapper.save(newVersion);
         }
 
         return newVersion;
@@ -113,6 +114,10 @@ public class CatalogDao {
 
     // Returns null if no version exists for the provided bookId
     private CatalogItemVersion getLatestVersionOfBook(String bookId) {
+        if (bookId == null) {
+            return null;
+        }
+
         CatalogItemVersion book = new CatalogItemVersion();
         book.setBookId(bookId);
 

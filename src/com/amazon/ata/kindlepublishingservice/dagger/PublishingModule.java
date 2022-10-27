@@ -1,5 +1,8 @@
 package com.amazon.ata.kindlepublishingservice.dagger;
 
+import com.amazon.ata.kindlepublishingservice.dao.CatalogDao;
+import com.amazon.ata.kindlepublishingservice.dao.PublishingStatusDao;
+import com.amazon.ata.kindlepublishingservice.publishing.BookPublishRequestManager;
 import com.amazon.ata.kindlepublishingservice.publishing.BookPublishTask;
 import com.amazon.ata.kindlepublishingservice.publishing.BookPublisher;
 
@@ -7,6 +10,7 @@ import com.amazon.ata.kindlepublishingservice.publishing.NoOpTask;
 import dagger.Module;
 import dagger.Provides;
 
+import java.awt.print.Book;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Singleton;
@@ -27,4 +31,9 @@ public class PublishingModule {
         return Executors.newScheduledThreadPool(1);
     }
 
+    @Provides
+    @Singleton
+    public BookPublishTask provideBookPublishTask(BookPublishRequestManager bookPublishRequestManager, PublishingStatusDao publishingStatusDao, CatalogDao catalogDao) {
+        return new BookPublishTask(bookPublishRequestManager, publishingStatusDao, catalogDao);
+    }
 }
